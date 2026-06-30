@@ -1,0 +1,153 @@
+import pandas as pd
+import joblib
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix
+)
+
+# ===========================================
+# 1. LOAD DATASET
+# ===========================================
+
+print("Loading Dataset...")
+
+df = pd.read_csv("cropdata_expanded_with_soils.csv")
+
+print(df.head())
+
+# ===========================================
+# 2. REMOVE MISSING VALUES
+# ===========================================
+
+df = df.dropna()
+
+# ===========================================
+# 3. ENCODE CATEGORICAL COLUMNS
+# ===========================================
+
+crop_encoder = LabelEncoder()
+soil_encoder = LabelEncoder()
+stage_encoder = LabelEncoder()
+
+df["crop ID"] = crop_encoder.fit_transform(df["crop ID"])
+df["soil_type"] = soil_encoder.fit_transform(df["soil_type"])
+df["Seedling Stage"] = stage_encoder.fit_transform(df["Seedling Stage"])
+
+# ===========================================
+# 4. FEATURES AND TARGET
+# ===========================================
+
+X = df[[
+    "crop ID",
+    "soil_type",
+    "Seedling Stage",
+    "MOI",
+    "temp",
+    "humidity"
+]]
+
+y = df["result"]
+
+# ===========================================
+# 5. TRAIN TEST SPLIT
+# ===========================================
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+
+# ===========================================
+# 6. BUILD RANDOM FOREST MODEL
+# ===========================================
+
+print("\nTraining Random Forest...")
+
+model = RandomForestClassifier(
+
+    n_estimators=200,
+
+    max_depth=12,
+
+    min_samples_split=4,
+
+    min_samples_leaf=2,
+
+    random_state=42
+
+)
+
+model.fit(X_train, y_train)
+
+# ===========================================
+# 7. PREDICTIONS
+# ===========================================
+
+predictions = model.predict(X_test)
+
+# ===========================================
+# 8. EVALUATION
+# ===========================================
+
+accuracy = accuracy_score(y_test, predictions)
+
+print("\n==============================")
+print("MODEL PERFORMANCE")
+print("==============================")
+
+print(f"Accuracy : {accuracy*100:.2f}%")
+
+print("\nClassification Report\n")
+
+print(classification_report(y_test, predictions))
+
+print("\nConfusion Matrix\n")
+
+print(confusion_matrix(y_test, predictions))
+
+# ===========================================
+# 9. FEATURE IMPORTANCE
+# ===========================================
+
+importance = pd.DataFrame({
+
+    "Feature": X.columns,
+
+    "Importance": model.feature_importances_
+
+})
+
+importance = importance.sort_values(
+    by="Importance",
+    ascending=False
+)
+
+print("\nFeature Importance\n")
+
+print(importance)
+
+# ===========================================
+# 10. SAVE MODEL
+# ===========================================
+
+joblib.dump(model, "models/irrigation_model.pkl")
+
+joblib.dump(crop_encoder, "models/crop_encoder.pkl")
+
+joblib.dump(soil_encoder, "models/soil_encoder.pkl")
+
+joblib.dump(stage_encoder, "models/stage_encoder.pkl")
+
+print("\nModel Saved Successfully.")
+
+print("Location : models/")
+
+print("\nTraining Completed.")

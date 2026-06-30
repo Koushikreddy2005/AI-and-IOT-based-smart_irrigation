@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>AI Smart Irrigation System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌱 AI Smart Irrigation System</h1>
+
+    <!-- Crop Selection -->
+
+    <div class="card">
+
+        <h2>Crop Information</h2>
+
+        <label>Crop</label>
+
+        <select id="crop">
+
+            {% for crop in crops %}
+            <option value="{{ crop }}">{{ crop }}</option>
+            {% endfor %}
+
+        </select>
+
+        <label>Soil Type</label>
+
+        <select id="soil">
+
+            {% for soil in soils %}
+            <option value="{{ soil }}">{{ soil }}</option>
+            {% endfor %}
+
+        </select>
+
+        <label>Growth Stage</label>
+
+        <select id="stage">
+
+            {% for stage in stages %}
+            <option value="{{ stage }}">{{ stage }}</option>
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <!-- Live Sensor Dashboard -->
+
+    <div class="dashboard">
+
+        <div class="sensor-card">
+
+            <h3>🌱 Soil Moisture</h3>
+
+            <h2 id="soilMoisture">-- %</h2>
+
+        </div>
+
+        <div class="sensor-card">
+
+            <h3>🌡 Temperature</h3>
+
+            <h2 id="temperature">-- °C</h2>
+
+        </div>
+
+        <div class="sensor-card">
+
+            <h3>💧 Humidity</h3>
+
+            <h2 id="humidity">-- %</h2>
+
+        </div>
+
+        <div class="sensor-card">
+
+            <h3>☁ Rain Probability</h3>
+
+            <h2 id="rainProbability">-- %</h2>
+
+        </div>
+
+    </div>
+
+    <!-- AI Prediction -->
+
+    <div class="prediction-card">
+
+        <h2>🤖 AI Recommendation</h2>
+
+        <h1 id="prediction">Waiting...</h1>
+
+        <h3>Pump Status</h3>
+
+        <h2 id="pumpStatus">--</h2>
+        <h3>🚰 Motor Status</h3>
+        <h2 id="motorStatus">--</h2>
+
+        <button id="predictBtn">
+
+            Predict Irrigation
+
+        </button>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+
+</html>
